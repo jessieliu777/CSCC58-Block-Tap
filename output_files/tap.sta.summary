@@ -1,0 +1,113 @@
+------------------------------------------------------------
+TimeQuest Timing Analyzer Summary
+------------------------------------------------------------
+
+Type  : Slow 1200mV 85C Model Setup 'CLOCK_50'
+Slack : -2.912
+TNS   : -110.263
+
+Type  : Slow 1200mV 85C Model Setup 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : -2.073
+TNS   : -77.975
+
+Type  : Slow 1200mV 85C Model Setup 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 33.234
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 0.373
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : 0.386
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'CLOCK_50'
+Slack : 0.569
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Minimum Pulse Width 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : -1.285
+TNS   : -95.090
+
+Type  : Slow 1200mV 85C Model Minimum Pulse Width 'CLOCK_50'
+Slack : 9.625
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Minimum Pulse Width 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 19.709
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Setup 'CLOCK_50'
+Slack : -2.542
+TNS   : -98.604
+
+Type  : Slow 1200mV 0C Model Setup 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : -1.823
+TNS   : -65.503
+
+Type  : Slow 1200mV 0C Model Setup 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 33.887
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Hold 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : 0.340
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Hold 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 0.354
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Hold 'CLOCK_50'
+Slack : 0.520
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Minimum Pulse Width 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : -1.285
+TNS   : -95.090
+
+Type  : Slow 1200mV 0C Model Minimum Pulse Width 'CLOCK_50'
+Slack : 9.645
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Minimum Pulse Width 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 19.710
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Setup 'CLOCK_50'
+Slack : -1.109
+TNS   : -37.426
+
+Type  : Fast 1200mV 0C Model Setup 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : -0.507
+TNS   : -13.290
+
+Type  : Fast 1200mV 0C Model Setup 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 36.697
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 0.164
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : 0.174
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'CLOCK_50'
+Slack : 0.247
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Minimum Pulse Width 'rate_divider:rate|RateDivider:case01|out[0]'
+Slack : -1.000
+TNS   : -74.000
+
+Type  : Fast 1200mV 0C Model Minimum Pulse Width 'CLOCK_50'
+Slack : 9.372
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Minimum Pulse Width 'drawer|VGA|mypll|altpll_component|pll|clk[0]'
+Slack : 19.754
+TNS   : 0.000
+
+------------------------------------------------------------
