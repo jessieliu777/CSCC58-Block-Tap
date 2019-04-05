@@ -1,0 +1,273 @@
+// Part 2
+
+module tap
+	(
+		CLOCK_50,						//	On Board 50 MHz
+		// Your inputs and outputs here
+        KEY,
+        SW,
+		// The ports below are for the VGA output.  Do not change.
+		VGA_CLK,   						//	VGA Clock
+		VGA_HS,							//	VGA H_SYNC
+		VGA_VS,							//	VGA V_SYNC
+		VGA_BLANK_N,						//	VGA BLANK
+		VGA_SYNC_N,						//	VGA SYNC
+		VGA_R,   						//	VGA Red[9:0]
+		VGA_G,	 						//	VGA Green[9:0]
+		VGA_B,   						//	VGA Blue[9:0],
+		LEDR
+	);
+
+	input			CLOCK_50;				//	50 MHz
+	input   [9:0]   SW;						//  6:0 for X and Y input, 9:7 for color input
+	input   [3:0]   KEY;					//  key 0 for system active low Resetn, key3 to load X and Y
+	output [9:0] LEDR;	// debug
+
+	// Declare your inputs and outputs here
+	// Do not change the following outputs
+	output			VGA_CLK;   				//	VGA Clock
+	output			VGA_HS;					//	VGA H_SYNC
+	output			VGA_VS;					//	VGA V_SYNC
+	output			VGA_BLANK_N;				//	VGA BLANK
+	output			VGA_SYNC_N;				//	VGA SYNC
+	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
+	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
+	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
+	
+	wire resetn;
+	assign resetn = KEY[0];
+	
+	// Create the colour, x, y and writeEn wires that are inputs to the controller.
+	wire [2:0] colour;
+	assign colour = SW[9:7];
+
+    wire start_draw;
+    assign start_draw = ~KEY[1];
+
+    wire start_xy_assignment;
+    assign start_xy_assignment = KEY[3];
+
+	wire [7:0] x, start_x;
+	wire [6:0] y, start_y;
+	
+	wire [4:0] offset_x, offset_y;
+	
+	wire writeEn;
+
+    // Create variables which control when x and y are loadedand where draw starts
+    wire ld_x, ld_y, ld_draw;
+
+	// Create an Instance of a VGA controller - there can be only one!
+	// Define the number of colours as well as the initial background
+	// image file (.MIF) for the controller.
+	vga_adapter VGA(
+			.resetn(resetn),
+			.clock(CLOCK_50),
+			.colour(colour),
+			.x(x),
+			.y(y),
+			.plot(writeEn),
+			/* Signals for the DAC to drive the monitor. */
+			.VGA_R(VGA_R),
+			.VGA_G(VGA_G),
+			.VGA_B(VGA_B),
+			.VGA_HS(VGA_HS),
+			.VGA_VS(VGA_VS),
+			.VGA_BLANK(VGA_BLANK_N),
+			.VGA_SYNC(VGA_SYNC_N),
+			.VGA_CLK(VGA_CLK));
+		defparam VGA.RESOLUTION = "160x120";
+		defparam VGA.MONOCHROME = "FALSE";
+		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+		defparam VGA.BACKGROUND_IMAGE = "black.mif";
+			
+	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
+	// for the VGA controller, in addition to any other functionality your design may require.
+	wire clk;
+    assign clk = CLOCK_50;
+    
+    // Instansiate datapath
+	// datapath d0(...);
+	datapath d0(
+		.colour(colour),
+		.clk(clk),
+		.resetn(resetn),
+		.writeEn(writeEn),
+      .ld_x(ld_x),
+      .ld_y(ld_y), 
+		.ld_draw(ld_draw),
+      .data_in(data_in),
+		.offset_x(offset_x),
+		.offset_y(offset_y),
+      .start_x(start_x),
+		.out_x(x),
+		.start_y(start_y),
+		.out_y(y),
+		.debug1(LEDR[0]),
+		.debug2(LEDR[1]),
+		.debug3(LEDR[2])
+	);
+
+    // Instansiate FSM control
+    // control c0(...);
+    control c0(
+        .clk(clk),
+        .resetn(resetn),
+        .input_xy(start_xy_assignment),
+        .input_draw(start_draw),
+		  .ld_x(ld_x),
+		  .ld_y(ld_y),
+		  .ld_draw(ld_draw),
+        .offset_x(offset_x),
+		  .offset_y(offset_y)
+    );
+    
+endmodule
+
+module control(
+    input clk,
+    input resetn,
+    input input_xy,
+    input input_draw,
+    output reg ld_x, ld_y, ld_draw,
+	 output reg [4:0] offset_x, offset_y
+    );
+
+    reg [5:0] current_state, next_state;
+	 
+	 reg first_draw = 1'b0;	// 0 means this is the first draw
+    
+    localparam  S_LOAD_X        = 5'd0,
+                S_LOAD_Y        = 5'd1,
+                S_DRAW_CYCLE    = 5'd3,
+					 S_LOADED_WAIT   = 5'd2;
+		
+    
+    // Next state logic aka our state table
+    always @(posedge clk)
+    begin: state_table 
+            case (current_state)
+                S_LOAD_X: next_state = input_xy ? S_LOAD_Y : S_LOAD_X; // Loop in current state until value is inputw
+                S_LOAD_Y: next_state = input_xy ? S_LOADED_WAIT : S_LOAD_Y; // Loop in current state until value is input
+                S_LOADED_WAIT: next_state = input_draw ? S_DRAW_CYCLE : S_LOADED_WAIT;  // X and Y loaded, waiting to draw
+					 S_DRAW_CYCLE: next_state = resetn ? S_LOAD_X : S_LOAD_X;  // continue drawing square until reset
+					 // square done drawing, wait for reset
+            default:     next_state = S_LOAD_X;
+        endcase
+    end // state_table
+   
+
+    // Output logic aka all of our datapath control signals
+    always @(posedge clk)
+    begin: enable_signals
+        // By default make all our signals 0
+        ld_x = 1'b0;
+        ld_y = 1'b0;
+		  ld_draw = 1'b0;
+
+        case (current_state)
+            S_LOAD_X: begin
+                ld_x = 1'b1;
+                end
+            S_LOAD_Y: begin
+                ld_y = 1'b1;
+                end
+				S_DRAW_CYCLE: begin
+                ld_draw = 1'b1;
+                // begin drawing
+					 if(offset_y == 4 && offset_x == 0) begin
+					 end
+					 else
+                if(offset_x > 3) begin
+                    offset_x <= 0;
+                    offset_y <= offset_y + 1;
+						  first_draw = 1'b0;
+                end
+					 else
+					 if(first_draw == 1'b0) begin
+						first_draw = 1'b1;
+				    end
+					 else
+					 if(offset_y < 4 && first_draw == 1'b1)	// keep iterating only if we need to
+						offset_x <= offset_x + 1;
+		      end
+        // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
+        endcase
+    end // enable_signals
+   
+    // current_state registers
+    always@(posedge clk)
+    begin: state_FFs
+        if(!resetn)
+            current_state <= S_LOAD_X;
+        else
+            current_state <= next_state;
+    end // state_FFS
+endmodule
+
+module datapath(
+	output reg colour,
+    input clk,
+    input resetn,
+	 output reg writeEn,
+    input ld_x, ld_y, ld_draw, data_in,
+	 input [3:0] offset_x, offset_y,
+	 output reg debug1, debug2, debug3,
+    output reg [7:0] start_x, out_x,
+    output reg [6:0] start_y, out_y
+    );
+	reg countb;
+	reg countd;
+	wire init;
+	assign init = 0;
+	always@(posedge clk) begin
+		if (countb == 1)
+		countb = 0;
+		else
+		countb = init + 1;
+	end
+	
+	always@(posedge clk) begin
+		if (countd == 1)
+		countd = 0;
+		else
+		countd = init + 1;
+	end
+    // Continually update X and Y coordinates based on input
+    always@(posedge clk) begin
+        // if reset, set all to 0
+        if(!resetn) begin
+            start_x = 8'b0;
+            start_y = 7'b0;
+				writeEn = 1'b0;
+        end
+        else begin
+				debug1 = 1'b0;
+				debug2 = 1'b0;
+				debug3 = 1'b0;
+            // update X and Y outputs if necessary
+            if(ld_x)
+                start_x <= data_in;
+					 debug1=1'b1;
+            if(ld_y)
+                start_y <= data_in;
+					 debug2=1'b1;
+				if(ld_draw) begin
+					if (countd == 1)
+					begin
+					start_y <= start_y + 2'd10;
+					colour <= 3'b010;
+					end
+					end
+		writeEn = 1'b1;
+		debug3=1'b1;
+		out_x = start_x + offset_x;
+		out_y = start_y + offset_y;
+		if (countb == 1)
+		begin
+		colour <= 3'b111;
+		end
+    end
+	 end
+endmodule
+

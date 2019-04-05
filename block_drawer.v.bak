@@ -1,0 +1,144 @@
+// Part 2
+
+module block_drawer
+	(
+		clock,		// onboard 50mhz 
+      resetn,			// reset for block drawer
+		start_x,			// starting x coordinate
+		start_y,			// starting y coordinate
+		colour,			// colour of the resulting block
+		block_size, 	// size of the resulting block
+		// The ports below are for the VGA output.  Do not change.
+		VGA_CLK,   						//	VGA Clock
+		VGA_HS,							//	VGA H_SYNC
+		VGA_VS,							//	VGA V_SYNC
+		VGA_BLANK_N,						//	VGA BLANK
+		VGA_SYNC_N,						//	VGA SYNC
+		VGA_R,   						//	VGA Red[9:0]
+		VGA_G,	 						//	VGA Green[9:0]
+		VGA_B,   						//	VGA Blue[9:0],
+	);
+
+	input	clock;							//	clock used to draw each pixel
+	input resetn;							// reset for the block
+	input [7:0] start_x;					// starting x coordinate of the block
+	input [6:0] start_y;					// starting y coordinate of the block
+	input [2:0] colour;					// colour of the block
+	input [3:0]	block_size;				// block size
+
+	// Declare your inputs and outputs here
+	// Do not change the following outputs
+	output			VGA_CLK;   				//	VGA Clock
+	output			VGA_HS;					//	VGA H_SYNC
+	output			VGA_VS;					//	VGA V_SYNC
+	output			VGA_BLANK_N;				//	VGA BLANK
+	output			VGA_SYNC_N;				//	VGA SYNC
+	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
+	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
+	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
+	
+	// Create the colour, x, y and writeEn wires that are inputs to the controller
+
+	wire [7:0] drawn_x;
+	wire [6:0] drawn_y;
+	
+	wire [4:0] offset_x, offset_y;
+
+	// Create an Instance of a VGA controller - there can be only one!
+	// Define the number of colours as well as the initial background
+	// image file (.MIF) for the controller.
+	vga_adapter VGA(
+			.resetn(resetn),
+			.clock(clock),
+			.colour(colour),
+			.x(x),
+			.y(y),
+			.plot(1'b1),
+			/* Signals for the DAC to drive the monitor. */
+			.VGA_R(VGA_R),
+			.VGA_G(VGA_G),
+			.VGA_B(VGA_B),
+			.VGA_HS(VGA_HS),
+			.VGA_VS(VGA_VS),
+			.VGA_BLANK(VGA_BLANK_N),
+			.VGA_SYNC(VGA_SYNC_N),
+			.VGA_CLK(VGA_CLK));
+		defparam VGA.RESOLUTION = "160x120";
+		defparam VGA.MONOCHROME = "FALSE";
+		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+		defparam VGA.BACKGROUND_IMAGE = "black.mif";
+    
+    // Instansiate datapath
+	// datapath d0(...);
+	datapath d0(
+		.clk(clock),
+		.resetn(resetn),
+		.offset_x(offset_x),
+		.offset_y(offset_y),
+      .start_x(start_x),
+		.out_x(drawn_x),
+		.start_y(start_y),
+		.out_y(drawn_y)
+	);
+
+    // Instansiate FSM control
+    // control c0(...);
+    control c0(
+        .clk(clk),
+        .resetn(resetn),
+        .offset_x(offset_x),
+		  .offset_y(offset_y),
+		  .block_size(BLOCK_SIZE)
+    );
+    
+endmodule
+
+module control(
+    input clk,
+    input resetn,
+	 input [3:0] block_size,
+	 output reg [4:0] offset_x, offset_y
+    );
+	 
+	 reg first_draw = 1'b0;	// 0 means this is the first draw
+
+    // Output logic aka all of our datapath control signals
+    always @(posedge clk)
+    begin: enable_draw
+		if(resetn) begin
+			offset_x <= 0;
+			offset_y <= 0;
+			first_draw = 1'b0;
+		end
+		else if(offset_x == block_size - 1 && offset_y == block_size - 1) begin
+			//die
+		end
+		else if(offset_x > block_size - 1) begin
+			offset_x <= 0;
+         offset_y <= offset_y + 1'd1;
+			first_draw = 1'b0;
+      end
+		else if(first_draw == 1'b0) begin	// ensure first pixel gets drawn
+			first_draw = 1'b1;
+		end
+		else if(offset_y < block_size)	// keep iterating only if we need to
+			offset_x <= offset_x + 1'd1;
+		end
+   
+endmodule
+
+module datapath(
+    input clk,
+    input resetn,
+	 input [3:0] offset_x, offset_y,
+    output reg [7:0] start_x, out_x,
+    output reg [6:0] start_y, out_y
+    );
+
+    // Continually update X and Y coordinates based on input
+    always@(posedge clk) begin
+      // update X and Y drawing coordinates
+		out_x = start_x + offset_x;
+		out_y = start_y + offset_y;
+    end
+endmodule

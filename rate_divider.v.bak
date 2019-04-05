@@ -1,0 +1,141 @@
+`timescale 1ns / 1ns
+
+module rate_divider(RATE, RESET, CLOCK_50, PULSE);
+	input CLOCK_50;
+	input RESET;
+	input [2:0] RATE;
+	output reg PULSE;
+	wire [27:0] input00, input01, input10, input11;
+	reg enable;
+	
+	RateDivider case00(CLOCK_50, input00, RESET, 1'b0, 1'b0, enable);
+	RateDivider case01(CLOCK_50, input01, RESET, 1'b1, 28'b0010111110101111000001111111, enable);
+	RateDivider case10(CLOCK_50, input10, RESET, 1'b1, 28'b0101111101011110000011111111, enable);
+	RateDivider case11(CLOCK_50, input11, RESET, 1'b1, 28'b1011111010111100000111111111, enable);
+	
+	always @(*)
+	begin
+		case(RATE)
+			2'b00: enable = (input00 == 1'b0) ? 1'b1 : 1'b0;
+			2'b01: enable = (input01 == 1'b0) ? 1'b1 : 1'b0;
+			2'b10: enable = (input10 == 1'b0) ? 1'b1 : 1'b0;
+			2'b11: enable = (input11 == 1'b0) ? 1'b1 : 1'b0;
+			default: enable = 1'b0;
+		endcase
+		PULSE = enable;
+	end
+
+endmodule
+
+module RateDivider(clock, out, reset, enable, d, ParLoad);
+	input clock, enable, reset;
+	input [3:0] ParLoad;
+	input [27:0] d;
+	output reg [27:0] out;
+	
+	always @(posedge clock)
+	begin
+		if(reset == 1'b0)
+			out <= 0;
+		else if(out == 1'b0 | ParLoad)
+			out <= d;
+		else if(enable)
+			out <= out - 1'b1;
+	end
+endmodule
+
+module twenty_six_bit_counter(e, c, r, q);	// initial enable, clock, reset, output
+	input e, c, r;
+	output [27:0] q;
+	wire [26:0] passthrough;
+	
+	t_flip_flop first_bit(e, c, r, q[0]);
+	assign passthrough[0] = q[0] & e;
+	t_flip_flop second_bit(passthrough[0], c, r, q[1]);
+	assign passthrough[1] = q[1] & passthrough[0];
+	t_flip_flop third_bit(passthrough[1], c, r, q[2]);
+	assign passthrough[2] = q[2] & passthrough[1];
+	t_flip_flop fourth_bit(passthrough[2], c, r, q[3]);
+	assign passthrough[3] = q[3] & passthrough[2];
+	t_flip_flop fifth_bit(passthrough[3], c, r, q[4]);
+	assign passthrough[4] = q[4] & passthrough[3];
+	t_flip_flop sixth_bit(passthrough[4], c, r, q[5]);
+	assign passthrough[5] = q[5] & passthrough[4];
+	t_flip_flop seventh_bit(passthrough[5], c, r, q[6]);
+	assign passthrough[6] = q[6] & passthrough[5];
+	t_flip_flop eighth_bit(passthrough[6], c, r, q[7]);
+	assign passthrough[7] = q[7] & passthrough[6];
+	t_flip_flop ninth_bit(passthrough[7], c, r, q[8]);
+	assign passthrough[8] = q[8] & passthrough[7];
+	t_flip_flop tenth_bit(passthrough[8], c, r, q[9]);
+	assign passthrough[9] = q[9] & passthrough[8];
+	t_flip_flop eleventh_bit(passthrough[9], c, r, q[10]);
+	assign passthrough[10] = q[10] & passthrough[9];
+	t_flip_flop twelfth_bit(passthrough[10], c, r, q[11]);
+	assign passthrough[11] = q[11] & passthrough[10];
+	t_flip_flop thirteenth_bit(passthrough[11], c, r, q[12]);
+	assign passthrough[12] = q[12] & passthrough[11];
+	t_flip_flop fourteenth_bit(passthrough[12], c, r, q[13]);
+	assign passthrough[13] = q[13] & passthrough[12];
+	t_flip_flop fifteenth_bit(passthrough[13], c, r, q[14]);
+	assign passthrough[14] = q[14] & passthrough[13];
+	t_flip_flop sixteenth_bit(passthrough[14], c, r, q[15]);
+	assign passthrough[15] = q[15] & passthrough[14];
+	t_flip_flop seventeenth_bit(passthrough[15], c, r, q[16]);
+	assign passthrough[16] = q[16] & passthrough[15];
+	t_flip_flop eighteenth_bit(passthrough[16], c, r, q[17]);
+	assign passthrough[17] = q[17] & passthrough[16];
+	t_flip_flop nineteenth_bit(passthrough[17], c, r, q[18]);
+	assign passthrough[18] = q[18] & passthrough[17];
+	t_flip_flop twentyth_bit(passthrough[18], c, r, q[19]);
+	assign passthrough[19] = q[19] & passthrough[18];
+	t_flip_flop twenty_first_bit(passthrough[19], c, r, q[20]);
+	assign passthrough[20] = q[20] & passthrough[19];
+	t_flip_flop twenty_second_bit(passthrough[20], c, r, q[21]);
+	assign passthrough[21] = q[21] & passthrough[20];
+	t_flip_flop twenty_third_bit(passthrough[21], c, r, q[22]);
+	assign passthrough[22] = q[22] & passthrough[21];
+	t_flip_flop twenty_fourth_bit(passthrough[22], c, r, q[23]);
+	assign passthrough[23] = q[23] & passthrough[22];
+	t_flip_flop twenty_fifth_bit(passthrough[23], c, r, q[24]);
+	assign passthrough[24] = q[24] & passthrough[23];
+	t_flip_flop twenty_sixth_bit(passthrough[24], c, r, q[25]);
+	assign passthrough[25] = q[25] & passthrough[24];
+	t_flip_flop twenty_seventh_bit(passthrough[25], c, r, q[26]);
+	assign passthrough[26] = q[26] & passthrough[25];
+	t_flip_flop twenty_eighth_bit(passthrough[26], c, r, q[27]);
+	
+endmodule
+
+
+module four_bit_counter(e, c, r, q);	// initial enable, clock, reset, output
+	input e, c, r;
+	output [3:0] q;
+	wire [2:0] passthrough;
+	
+	t_flip_flop first_bit(e, c, r, q[0]);
+	assign passthrough[0] = q[0] & e;
+	t_flip_flop second_bit(passthrough[0], c, r, q[1]);
+	assign passthrough[1] = q[1] & passthrough[0];
+	t_flip_flop third_bit(passthrough[1], c, r, q[2]);
+	assign passthrough[2] = q[2] & passthrough[1];
+	t_flip_flop fourth_bit(passthrough[2], c, r, q[3]);
+	
+endmodule
+
+module t_flip_flop(e, c, r, q);	// enable, clock, reset, output
+	input e, c, r;
+	output reg q;
+	reg and1;
+	reg and2;
+	reg and3;
+	reg and4; 
+	
+	always @(posedge c, negedge r)
+	begin
+		if(r == 1'b0)
+			q <= 0;
+		else if(e == 1'b1)
+			q <= ~q;
+	end
+endmodule
