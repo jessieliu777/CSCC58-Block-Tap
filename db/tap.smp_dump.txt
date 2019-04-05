@@ -1,0 +1,38 @@
+
+State Machine - |tap|cur
+Name cur.draw cur.init11 cur.init10 cur.init9 cur.init8 cur.init7 cur.init6 cur.init5 cur.init4 cur.predraw cur.init3 cur.init2 cur.update cur.stop cur.stay cur.init1 
+cur.init1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+cur.stay 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+cur.stop 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+cur.update 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+cur.init2 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+cur.init3 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+cur.predraw 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+cur.init4 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+cur.init5 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+cur.init6 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+cur.init7 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+cur.init8 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+cur.init9 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+cur.init10 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+cur.init11 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+cur.draw 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |tap|nxt
+Name nxt.draw nxt.init11 nxt.init10 nxt.init9 nxt.init8 nxt.init7 nxt.init6 nxt.init5 nxt.init4 nxt.predraw nxt.init3 nxt.init2 nxt.update nxt.stop nxt.stay nxt.init1 
+nxt.init1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+nxt.stay 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+nxt.stop 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+nxt.update 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+nxt.init2 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+nxt.init3 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+nxt.predraw 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+nxt.init4 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+nxt.init5 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+nxt.init6 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+nxt.init7 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+nxt.init8 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+nxt.init9 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+nxt.init10 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+nxt.init11 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+nxt.draw 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
