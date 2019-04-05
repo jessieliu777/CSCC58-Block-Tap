@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Fri Mar 22 16:18:41 2019
+Quartus Prime Version : 16.0.0 Build 211 04/27/2016 SJ Lite Edition
+Revision Name : tap
+Top-level Entity Name : tap
+Family : Cyclone IV E
+Total logic elements : 251
+    Total combinational functions : 183
+    Dedicated logic registers : 156
+Total registers : 156
+Total pins : 79
+Total virtual pins : 0
+Total memory bits : 57,600
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 1
